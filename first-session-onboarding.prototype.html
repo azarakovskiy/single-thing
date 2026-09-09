@@ -192,6 +192,31 @@
     .c-rail-item.active { background: var(--yellow); }
     .c-main { min-width: 0; }
 
+    /* Variant D: a cold-open panel relay, shaped by the first human review. */
+    .d-progress { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; margin: 24px 0 12px; }
+    .d-progress-panel { min-height: 92px; padding: 10px; border: 3px solid var(--ink); background: var(--white); overflow: hidden; }
+    .d-progress-panel.done { background: var(--mint); }
+    .d-progress-panel.current { background: var(--yellow); box-shadow: 5px 5px 0 var(--ink); transform: translateY(-3px); }
+    .d-progress-panel span { display: block; margin-bottom: 12px; color: var(--coral); font-size: 10px; font-weight: 1000; }
+    .d-progress-panel strong { display: block; font-size: 12px; line-height: 1.15; overflow-wrap: anywhere; }
+    .d-stage { display: grid; grid-template-columns: minmax(250px, .72fr) minmax(0, 1.55fr); min-height: 520px; margin-top: 22px; border: 4px solid var(--ink); box-shadow: 10px 10px 0 var(--ink); }
+    .d-premise-spine { padding: 24px; border-right: 4px solid var(--ink); background: var(--yellow); }
+    .d-premise-spine h2 { margin-top: 50px; font-size: clamp(32px, 4.6vw, 64px); }
+    .d-current { display: grid; align-content: center; padding: clamp(24px, 5vw, 64px); background: var(--white); }
+    .d-current h1 { max-width: 760px; margin-bottom: 14px; font-size: clamp(46px, 7vw, 92px); }
+    .d-current-copy { color: var(--muted); font-size: 16px; }
+    .d-single-input { min-height: 72px; padding: 14px 0; border: 0; border-bottom: 5px solid var(--ink); background: transparent; font-size: clamp(20px, 3vw, 36px); font-weight: 900; }
+    .d-single-input:focus-visible { outline-offset: 7px; }
+    .d-review { margin-top: 24px; }
+    .d-sign { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .65fr); gap: 18px; margin-top: 22px; }
+    .d-sign-copy { padding: 26px; color: var(--white); background: var(--ink); }
+    .d-sign-form { padding: 26px; border: 4px solid var(--ink); background: var(--pink); box-shadow: var(--shadow); }
+    .d-verification { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, .8fr); gap: 20px; align-items: center; margin: 22px 0; padding: 20px; border: 4px solid var(--ink); background: var(--pink); box-shadow: var(--shadow); }
+    .d-verification.verified { background: var(--mint); }
+    .d-verification h2 { margin-bottom: 6px; font-size: 29px; }
+    .d-verify-form { display: flex; gap: 8px; align-items: end; }
+    .d-after-publish { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr); gap: 18px; align-items: start; }
+
     .ballot { display: grid; gap: 0; }
     .peer-response { padding: clamp(18px, 3vw, 30px); border-bottom: 3px solid var(--ink); background: var(--yellow); }
     .peer-response h2 { font-size: clamp(28px, 4vw, 52px); }
@@ -265,10 +290,15 @@
       .a-intro-panel strong { margin-top: 14px; }
       .chain-node { min-height: 100px; }
       .chain-node:not(:last-child)::after { content: "↓"; right: 18px; top: auto; bottom: -22px; }
-      .a-grid, .b-workspace, .b-gate, .b-board-stage, .c-flow { grid-template-columns: 1fr; }
+      .a-grid, .b-workspace, .b-gate, .b-board-stage, .c-flow, .d-stage, .d-sign, .d-verification, .d-after-publish { grid-template-columns: 1fr; }
       .a-aside { position: static; }
       .b-premise { border-right: 0; border-bottom: 4px solid var(--ink); }
       .b-premise h1 { margin-top: 18px; }
+      .d-premise-spine { border-right: 0; border-bottom: 4px solid var(--ink); }
+      .d-premise-spine h2 { margin-top: 18px; }
+      .d-progress { grid-template-columns: 1fr; }
+      .d-progress-panel { min-height: 70px; }
+      .d-verify-form { align-items: stretch; flex-direction: column; }
       .c-rounds, .board-mini { grid-template-columns: 1fr; }
       .c-round { min-height: 210px; border-right: 0; border-bottom: 3px solid var(--ink); }
       .c-round:last-child { border-bottom: 0; }
@@ -308,7 +338,8 @@
     const variants = [
       { key: 'A', name: 'Guided strip' },
       { key: 'B', name: 'Cold open' },
-      { key: 'C', name: 'Board doorway' }
+      { key: 'C', name: 'Board doorway' },
+      { key: 'D', name: 'Panel relay' }
     ];
     const example = {
       premise: 'What if humans only needed two hours of sleep?',
@@ -337,6 +368,8 @@
       adult: false,
       terms: false,
       permanent: false,
+      emailSent: false,
+      verified: false,
       answer: '',
       step1: '',
       step2: '',
@@ -344,7 +377,7 @@
       convincing: '',
       entertaining: ''
     });
-    const stateByVariant = { A: initialState(), B: initialState(), C: initialState() };
+    const stateByVariant = { A: initialState(), B: initialState(), C: initialState(), D: initialState() };
     const queryVariant = new URLSearchParams(location.search).get('variant')?.toUpperCase();
     let variant = variants.some(item => item.key === queryVariant) ? queryVariant : 'A';
 
@@ -352,6 +385,7 @@
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
     })[char]);
     const current = () => stateByVariant[variant];
+    const identityStatus = state => variant === 'D' ? (state.verified ? 'verified' : state.nickname ? 'provisional' : 'open') : (accountComplete(state) ? 'ready' : 'open');
     const responseComplete = state => [state.answer, state.step1, state.step2, state.step3].every(value => value.trim());
     const accountComplete = state => state.email.includes('@') && /^\d{6}$/.test(state.code) && state.nickname.trim().length >= 3 && state.adult && state.terms && state.permanent;
     const ballotComplete = state => Boolean(state.convincing || state.entertaining);
@@ -531,13 +565,64 @@
       return `<div class="shell">${topbar('c-topbar')}${content}</div>`;
     }
 
+    function dProgress(state) {
+      const panels = [
+        { label: 'Premise', text: example.premise },
+        { label: 'Answer', text: state.answer || 'Jump to the ending' },
+        { label: 'Step 1', text: state.step1 || 'First push' },
+        { label: 'Step 2', text: state.step2 || 'Human reaction' },
+        { label: 'Step 3', text: state.step3 || 'New normal' }
+      ];
+      return `<div class="d-progress" aria-label="Response panels">${panels.map((panel, index) => {
+        const done = index === 0 || state.stage >= index;
+        const active = state.stage < 4 && index === state.stage + 1;
+        return `<article class="d-progress-panel ${done ? 'done' : ''} ${active ? 'current' : ''}"><span>${panel.label.toUpperCase()}</span><strong>${esc(panel.text)}</strong></article>`;
+      }).join('')}</div>`;
+    }
+
+    function dRelayForm(state) {
+      const prompts = [
+        { field: 'answer', kicker: 'ANSWER · START AT THE END', title: 'Jump to the ending.', copy: 'If the premise were true, what durable everyday change would you notice?', placeholder: 'One concrete consequence…' },
+        { field: 'step1', kicker: 'STEP 1 · FIRST PUSH', title: 'Rewind one panel.', copy: 'Starting from the premise, what changes immediately?', placeholder: 'The first thing that changes…' },
+        { field: 'step2', kicker: 'STEP 2 · HUMAN REACTION', title: 'Let people react.', copy: 'What do people, institutions, or systems do because of step 1?', placeholder: 'Because of that…' },
+        { field: 'step3', kicker: 'STEP 3 · NEW NORMAL', title: 'Make the ending click.', copy: 'What follows from step 2 that makes your answer feel earned?', placeholder: 'That leads to…' }
+      ];
+      const prompt = prompts[state.stage];
+      return `<form data-form="relay" novalidate><p class="kicker">${prompt.kicker}</p><h1>${prompt.title}</h1><p class="d-current-copy">${prompt.copy}</p><label class="field"><span class="field-hint">Press Enter or use the button</span><input class="d-single-input" data-field="${prompt.field}" value="${esc(state[prompt.field])}" placeholder="${prompt.placeholder}" autocomplete="off" autofocus></label>${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}<div class="button-row"><button class="button primary" type="submit">${state.stage === 3 ? 'Assemble response' : 'Next panel'}</button><button class="text-button" type="button" data-fill-current>Try the sample line</button>${state.stage > 0 ? `<button class="text-button" type="button" data-go="${state.stage - 1}">Back one panel</button>` : ''}</div></form>`;
+    }
+
+    function dVerification(state) {
+      if (state.verified) {
+        return `<section class="d-verification verified"><div><span class="panel-number">EMAIL CONFIRMED</span><h2>Your Response stays live.</h2><p class="mini-note">Future sign-ins use a fresh email code.</p></div><strong>ACCOUNT ACTIVE</strong></section>`;
+      }
+      if (state.emailSent) {
+        return `<section class="d-verification"><div><span class="panel-number">PUBLISHED · 3:59 LEFT TO VERIFY</span><h2>Check ${esc(state.email)}.</h2><p class="mini-note">Enter any six digits in this prototype. The public Response remains provisional until then.</p></div><form class="d-verify-form" data-form="email-code" novalidate><label class="field"><span>Email code</span><input data-field="code" inputmode="numeric" maxlength="6" value="${esc(state.code)}" placeholder="314159"></label><button class="button primary" type="submit">Confirm email</button></form>${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}</section>`;
+      }
+      return `<section class="d-verification"><div><span class="panel-number">PUBLISHED · 4:00 LEFT TO VERIFY</span><h2>Almost there. Keep it on the board.</h2><p class="mini-note">Your Response is public now. Confirm an email within four hours or the full Response comes off the board.</p></div><form class="d-verify-form" data-form="email-post" novalidate><label class="field"><span>Email</span><input type="email" data-field="email" value="${esc(state.email)}" placeholder="you@example.com"></label><button class="button primary" type="submit">Send code</button></form>${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}</section>`;
+    }
+
+    function variantD() {
+      const state = current();
+      let content = '';
+      if (state.stage < 4) {
+        content = `${dProgress(state)}<section class="d-stage"><aside class="d-premise-spine"><span class="deadline">LIVE · 5 DAYS LEFT</span><span class="panel-number">ACCEPT THIS AS TRUE</span><h2>${example.premise}</h2><p class="mini-note">No tour. One prompt at a time draws the storyboard around your idea.</p></aside><section class="d-current">${dRelayForm(state)}</section></section><p class="callout" style="margin-top:22px"><strong>Panel-relay hypothesis:</strong> begin inside the game, guide with changing prompts, and let Enter carry the player forward without presenting a four-field form.</p>`;
+      } else if (state.stage === 4) {
+        content = `${dProgress(state)}<section class="d-review"><h1 class="hero-title" style="font-size:clamp(40px,7vw,82px)">YOUR ENDING.<br>THE PATH THAT EARNS IT.</h1>${responsePreview(state)}<div class="d-sign"><section class="d-sign-copy"><span class="panel-number" style="color:var(--yellow)">READY TO PUBLISH</span><h2 class="heavy" style="font-size:36px">No sign-up wall.</h2><p>Choose the permanent public Nickname that signs this Response. Email comes after publication.</p></section><section class="d-sign-form"><label class="field"><span>Permanent Nickname</span><input data-field="nickname" value="${esc(state.nickname)}" placeholder="Moss Satellite" autocomplete="nickname"><span class="field-hint">Globally unique and not renameable.</span></label>${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}<div class="button-row"><button class="button primary" type="button" data-provisional-publish>Publish as ${esc(state.nickname || 'this Nickname')}</button><button class="text-button" type="button" data-fill-nickname>Use Moss Satellite</button></div><p class="mini-note">Publishing confirms you are 18+ and accept the terms and content policy. The Response becomes immutable immediately.</p></section></div></section>`;
+      } else if (state.stage === 5) {
+        content = `<h1 class="hero-title" style="font-size:clamp(40px,7vw,82px)">PUBLISHED.<br>YOU ARE ON THE BOARD.</h1>${dVerification(state)}<div class="d-after-publish"><div>${board(state, `Published as ${state.nickname}.`)}</div><div>${ballot(state, 6)}</div></div>`;
+      } else {
+        content = `<h1 class="hero-title" style="font-size:clamp(40px,7vw,82px)">FIRST LOOP<br>COMPLETE.</h1>${dVerification(state)}${board(state, 'Your first ballot is saved. Keep exploring or confirm email before the timer ends.')}`;
+      }
+      return `<div class="shell b-shell">${topbar()}${content}</div>`;
+    }
+
     function render() {
       const app = document.querySelector('#app');
-      app.innerHTML = variant === 'A' ? variantA() : variant === 'B' ? variantB() : variantC();
+      app.innerHTML = variant === 'A' ? variantA() : variant === 'B' ? variantB() : variant === 'C' ? variantC() : variantD();
       const info = variants.find(item => item.key === variant);
       document.querySelector('#switcher-label').textContent = `${info.key} · ${info.name}`;
       const state = current();
-      document.querySelector('#state-readout').textContent = `STATE · variant=${variant} · stage=${state.stage} · account=${accountComplete(state) ? 'ready' : 'open'} · response=${responseComplete(state) ? 'complete' : 'open'} · ballot=${ballotComplete(state) ? 'marked' : 'open'}\nPrototype loaded. No persistence.`;
+      document.querySelector('#state-readout').textContent = `STATE · variant=${variant} · stage=${state.stage} · account=${identityStatus(state)} · response=${responseComplete(state) ? 'complete' : 'open'} · ballot=${ballotComplete(state) ? 'marked' : 'open'}\nPrototype loaded. No persistence.`;
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
@@ -572,7 +657,9 @@
       const field = event.target.dataset.field;
       if (!field) return;
       current()[field] = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-      document.querySelector('#state-readout').textContent = `STATE · variant=${variant} · stage=${current().stage} · account=${accountComplete(current()) ? 'ready' : 'open'} · response=${responseComplete(current()) ? 'complete' : 'open'} · ballot=${ballotComplete(current()) ? 'marked' : 'open'}\nPrototype loaded. No persistence.`;
+      document.querySelector('#state-readout').textContent = `STATE · variant=${variant} · stage=${current().stage} · account=${identityStatus(current())} · response=${responseComplete(current()) ? 'complete' : 'open'} · ballot=${ballotComplete(current()) ? 'marked' : 'open'}\nPrototype loaded. No persistence.`;
+      const publishButton = document.querySelector('[data-provisional-publish]');
+      if (field === 'nickname' && publishButton) publishButton.textContent = `Publish as ${current().nickname || 'this Nickname'}`;
     });
 
     document.addEventListener('change', event => {
@@ -600,6 +687,35 @@
         }
         setStage(variant === 'A' ? 4 : variant === 'B' ? 1 : 3);
       }
+      if (event.target.dataset.form === 'relay') {
+        const field = ['answer', 'step1', 'step2', 'step3'][state.stage];
+        if (!state[field].trim()) {
+          state.error = 'Write one line to draw the next panel.';
+          render();
+          return;
+        }
+        setStage(state.stage + 1);
+      }
+      if (event.target.dataset.form === 'email-post') {
+        if (!state.email.includes('@')) {
+          state.error = 'Enter an email address to receive the code.';
+          render();
+          return;
+        }
+        state.emailSent = true;
+        state.error = '';
+        render();
+      }
+      if (event.target.dataset.form === 'email-code') {
+        if (!/^\d{6}$/.test(state.code)) {
+          state.error = 'Enter the six-digit code from the email.';
+          render();
+          return;
+        }
+        state.verified = true;
+        state.error = '';
+        render();
+      }
     });
 
     document.addEventListener('click', event => {
@@ -608,6 +724,27 @@
       if (button.dataset.go !== undefined) setStage(button.dataset.go);
       if (button.hasAttribute('data-fill-account')) fillAccount();
       if (button.hasAttribute('data-fill-response')) fillResponse();
+      if (button.hasAttribute('data-fill-current')) {
+        const state = current();
+        const field = ['answer', 'step1', 'step2', 'step3'][state.stage];
+        const value = state.stage === 0 ? example.answer : example.steps[state.stage - 1];
+        state[field] = value;
+        setStage(state.stage + 1);
+      }
+      if (button.hasAttribute('data-fill-nickname')) {
+        current().nickname = 'Moss Satellite';
+        current().error = '';
+        render();
+      }
+      if (button.hasAttribute('data-provisional-publish')) {
+        const state = current();
+        if (state.nickname.trim().length < 3) {
+          state.error = 'Choose a Nickname of at least three characters.';
+          render();
+          return;
+        }
+        setStage(5);
+      }
       if (button.dataset.rate) {
         current()[button.dataset.rate] = button.dataset.value;
         current().error = '';
