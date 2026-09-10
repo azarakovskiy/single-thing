@@ -696,7 +696,7 @@
       const title = isAnswer ? 'Answer the Target.' : state.stage === 1 ? 'What makes that ending happen?' : 'What must happen before that?';
       const copy = isAnswer
         ? challenge.target
-        : canFinish ? 'Write one cause. If the Premise can now cause this panel directly, close the chain; otherwise add another.' : 'Write the consequence immediately before the Answer.';
+        : canFinish ? 'Write one cause. Then choose whether the Premise connects directly to it or the chain needs another step; neither choice is the default.' : 'Write the consequence immediately before the Answer.';
       return `<form data-form="e-relay" novalidate>
         <p class="kicker">${isAnswer ? 'ANSWER · START AT THE END' : `CAUSAL STEP ${state.stage} · REWIND`}</p>
         <h1>${title}</h1>
@@ -704,7 +704,7 @@
         <label class="field"><span class="field-hint">${isAnswer ? 'One concise consequence' : 'One claimed consequence of the panel before it in causal order'}</span><input class="d-single-input" data-field="${field}" value="${esc(state[field])}" placeholder="${isAnswer ? 'What changes?' : 'Because…'}" autocomplete="off" autofocus></label>
         ${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}
         <div class="button-row">
-          ${isAnswer || state.stage === 1 ? '<button class="button primary" type="submit" data-e-action="add">Next causal panel</button>' : `<button class="button primary" type="submit" data-e-action="finish">${state.stage === 4 ? 'Complete the chain' : 'The Premise causes this · finish'}</button>`}
+          ${isAnswer || state.stage === 1 ? '<button class="button primary" type="submit" data-e-action="add">Next causal panel</button>' : `<button class="button ${state.stage === 4 ? 'primary' : ''}" type="submit" data-e-action="finish">${state.stage === 4 ? 'Complete the chain' : 'The Premise causes this · finish'}</button>`}
           ${canFinish && canAdd ? '<button class="button" type="submit" data-e-action="add">Add another causal step</button>' : ''}
           <button class="text-button" type="button" data-fill-e-current>Try the sample line</button>
         </div>
@@ -1012,6 +1012,12 @@
     });
 
     document.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && variant === 'E' && current().stage >= 2 && current().stage < 4 && event.target.matches('[data-form="e-relay"] input')) {
+        event.preventDefault();
+        current().error = 'Choose whether the Premise connects here or another causal step is needed.';
+        render();
+        return;
+      }
       if (!['ArrowLeft','ArrowRight'].includes(event.key)) return;
       if (event.target.matches('input, textarea, [contenteditable]')) return;
       const step = event.key === 'ArrowLeft' ? -1 : 1;
