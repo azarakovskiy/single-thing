@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Three first-session onboarding journeys, switchable via ?variant=A|B|C, in one throwaway Science Storyboard prototype. -->
+<!-- Five first-session onboarding journeys, switchable via ?variant=A|B|C|D|E, in one throwaway Science Storyboard prototype. -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -217,6 +217,28 @@
     .d-verify-form { display: flex; gap: 8px; align-items: end; }
     .d-after-publish { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr); gap: 18px; align-items: start; }
 
+
+    /* Variant E: revised Challenge rules and verification as the publication boundary. */
+    .e-challenge-part + .e-challenge-part { margin-top: 26px; padding-top: 22px; border-top: 3px solid var(--ink); }
+    .e-challenge-part h2 { margin: 8px 0 0; font-size: clamp(25px, 3.3vw, 44px); }
+    .e-rewind { display: flex; gap: 7px; align-items: stretch; margin: 24px 0 12px; overflow-x: auto; padding-bottom: 8px; }
+    .e-rewind-panel { flex: 1 0 170px; min-height: 112px; padding: 12px; border: 3px solid var(--ink); background: var(--white); }
+    .e-rewind-panel.answer { color: var(--white); background: var(--teal); }
+    .e-rewind-panel.cause { background: var(--mint); }
+    .e-rewind-panel.premise { background: var(--yellow); }
+    .e-rewind-arrow { display: grid; place-items: center; flex: 0 0 25px; font-size: 22px; font-weight: 1000; }
+    .e-gate { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr); gap: 20px; align-items: start; margin-top: 22px; }
+    .e-chain-editor { display: grid; gap: 8px; }
+    .e-chain-row { display: grid; grid-template-columns: 92px minmax(0, 1fr); border: 3px solid var(--ink); background: var(--white); }
+    .e-chain-row > strong { display: grid; place-items: center; padding: 10px; border-right: 3px solid var(--ink); font-size: 11px; }
+    .e-chain-row textarea { min-height: 68px; border: 0; background: transparent; }
+    .e-chain-row.fixed { background: var(--yellow); }
+    .e-chain-row.answer { color: var(--white); background: var(--teal); }
+    .e-chain-row.answer textarea { color: var(--white); }
+    .e-publish { padding: 25px; border: 4px solid var(--ink); background: var(--pink); box-shadow: var(--shadow); }
+    .e-publish form { display: grid; gap: 14px; }
+    .e-attested { text-align: left; line-height: 1.25; }
+    .e-board-card p { margin: 10px 0 0; font-size: 12px; }
     .ballot { display: grid; gap: 0; }
     .peer-response { padding: clamp(18px, 3vw, 30px); border-bottom: 3px solid var(--ink); background: var(--yellow); }
     .peer-response h2 { font-size: clamp(28px, 4vw, 52px); }
@@ -290,7 +312,7 @@
       .a-intro-panel strong { margin-top: 14px; }
       .chain-node { min-height: 100px; }
       .chain-node:not(:last-child)::after { content: "↓"; right: 18px; top: auto; bottom: -22px; }
-      .a-grid, .b-workspace, .b-gate, .b-board-stage, .c-flow, .d-stage, .d-sign, .d-verification, .d-after-publish { grid-template-columns: 1fr; }
+      .a-grid, .b-workspace, .b-gate, .b-board-stage, .c-flow, .d-stage, .d-sign, .d-verification, .d-after-publish, .e-gate { grid-template-columns: 1fr; }
       .a-aside { position: static; }
       .b-premise { border-right: 0; border-bottom: 4px solid var(--ink); }
       .b-premise h1 { margin-top: 18px; }
@@ -339,7 +361,8 @@
       { key: 'A', name: 'Guided strip' },
       { key: 'B', name: 'Cold open' },
       { key: 'C', name: 'Board doorway' },
-      { key: 'D', name: 'Panel relay' }
+      { key: 'D', name: 'Panel relay · earlier rules' },
+      { key: 'E', name: 'Verified publish · revised map' }
     ];
     const example = {
       premise: 'What if humans only needed two hours of sleep?',
@@ -359,6 +382,26 @@
         'Cafés stretch breakfast into an all-day ritual for meeting across schedules.'
       ]
     };
+    const challenge = {
+      premise: 'Humans need only two hours of sleep each day.',
+      target: 'What would change about everyday life on a city street?',
+      answer: 'The same street would take turns being a quiet zone and a nightlife zone.',
+      reverseSteps: [
+        'Each block posts recurring quiet and active hours.',
+        'Residents and businesses negotiate when noise is acceptable.',
+        'People’s sleep and activity schedules stop overlapping.',
+        'Extra waking hours spread work and leisure through the night.'
+      ],
+      peer: {
+        author: 'Mira Chen',
+        answer: 'Sidewalk cafés would book tables by neighborhood sleep cycle.',
+        steps: [
+          'Extra waking hours split residents into several daily schedules.',
+          'Friends need meeting places that operate across those schedules.',
+          'Cafés assign tables to recurring early, midday, and overnight groups.'
+        ]
+      }
+    };
     const initialState = () => ({
       stage: 0,
       error: '',
@@ -375,9 +418,14 @@
       step2: '',
       step3: '',
       convincing: '',
-      entertaining: ''
+      entertaining: '',
+      back1: '',
+      back2: '',
+      back3: '',
+      back4: '',
+      stepCount: 0,
     });
-    const stateByVariant = { A: initialState(), B: initialState(), C: initialState(), D: initialState() };
+    const stateByVariant = { A: initialState(), B: initialState(), C: initialState(), D: initialState(), E: initialState() };
     const queryVariant = new URLSearchParams(location.search).get('variant')?.toUpperCase();
     let variant = variants.some(item => item.key === queryVariant) ? queryVariant : 'A';
 
@@ -385,8 +433,12 @@
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
     })[char]);
     const current = () => stateByVariant[variant];
-    const identityStatus = state => variant === 'D' ? (state.verified ? 'verified' : state.nickname ? 'provisional' : 'open') : (accountComplete(state) ? 'ready' : 'open');
-    const responseComplete = state => [state.answer, state.step1, state.step2, state.step3].every(value => value.trim());
+    const identityStatus = state => variant === 'E'
+      ? (state.verified ? 'published' : state.emailSent ? 'private-awaiting-code' : state.nickname ? 'private-candidate' : 'open')
+      : variant === 'D' ? (state.verified ? 'verified' : state.nickname ? 'provisional' : 'open') : (accountComplete(state) ? 'ready' : 'open');
+    const responseComplete = state => variant === 'E'
+      ? eResponseComplete(state)
+      : [state.answer, state.step1, state.step2, state.step3].every(value => value.trim());
     const accountComplete = state => state.email.includes('@') && /^\d{6}$/.test(state.code) && state.nickname.trim().length >= 3 && state.adult && state.terms && state.permanent;
     const ballotComplete = state => Boolean(state.convincing || state.entertaining);
 
@@ -616,9 +668,138 @@
       return `<div class="shell b-shell">${topbar()}${content}</div>`;
     }
 
+    function eSteps(state) {
+      return Array.from({ length: state.stepCount }, (_, index) => state[`back${state.stepCount - index}`]);
+    }
+
+    function eResponseComplete(state) {
+      const steps = eSteps(state);
+      return state.answer.trim() && steps.length >= 2 && steps.length <= 4 && steps.every(step => step.trim());
+    }
+
+    function eRewind(state) {
+      const count = state.stepCount || Math.min(Math.max(state.stage, 0), 4);
+      const causes = Array.from({ length: count }, (_, index) => state[`back${index + 1}`] || `Cause ${index + 1} before the Answer`);
+      const panel = (kind, label, text) => `<article class="e-rewind-panel ${kind}"><span class="panel-number">${label}</span><strong>${esc(text)}</strong></article>`;
+      return `<div class="e-rewind" aria-label="Response being authored backward">
+        ${panel('answer', 'ANSWER · WRITTEN FIRST', state.answer || 'Answer the Target')}
+        ${causes.map((cause, index) => `<span class="e-rewind-arrow" aria-hidden="true">←</span>${panel('cause', `BECAUSE · ${index + 1}`, cause)}`).join('')}
+        <span class="e-rewind-arrow" aria-hidden="true">←</span>${panel('premise', 'PREMISE', challenge.premise)}
+      </div>`;
+    }
+
+    function eRelayForm(state) {
+      const isAnswer = state.stage === 0;
+      const field = isAnswer ? 'answer' : `back${state.stage}`;
+      const canFinish = state.stage >= 2;
+      const canAdd = state.stage < 4;
+      const title = isAnswer ? 'Answer the Target.' : state.stage === 1 ? 'What makes that ending happen?' : 'What must happen before that?';
+      const copy = isAnswer
+        ? challenge.target
+        : canFinish ? 'Write one cause. If the Premise can now cause this panel directly, close the chain; otherwise add another.' : 'Write the consequence immediately before the Answer.';
+      return `<form data-form="e-relay" novalidate>
+        <p class="kicker">${isAnswer ? 'ANSWER · START AT THE END' : `CAUSAL STEP ${state.stage} · REWIND`}</p>
+        <h1>${title}</h1>
+        <p class="d-current-copy">${copy}</p>
+        <label class="field"><span class="field-hint">${isAnswer ? 'One concise consequence' : 'One claimed consequence of the panel before it in causal order'}</span><input class="d-single-input" data-field="${field}" value="${esc(state[field])}" placeholder="${isAnswer ? 'What changes?' : 'Because…'}" autocomplete="off" autofocus></label>
+        ${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}
+        <div class="button-row">
+          ${isAnswer || state.stage === 1 ? '<button class="button primary" type="submit" data-e-action="add">Next causal panel</button>' : `<button class="button primary" type="submit" data-e-action="finish">${state.stage === 4 ? 'Complete the chain' : 'The Premise causes this · finish'}</button>`}
+          ${canFinish && canAdd ? '<button class="button" type="submit" data-e-action="add">Add another causal step</button>' : ''}
+          <button class="text-button" type="button" data-fill-e-current>Try the sample line</button>
+        </div>
+      </form>`;
+    }
+
+    function eEditableChain(state) {
+      const steps = eSteps(state);
+      return `<section class="panel panel-pad">
+        <span class="panel-number">PRIVATE RESPONSE · ${steps.length} CAUSAL STEPS</span>
+        <h2 class="heavy">The relay becomes one editable chain.</h2>
+        <p>No separate review screen. Read forward and change any line here before requesting the publishing code.</p>
+        <p class="callout"><strong>Target:</strong> ${challenge.target}</p>
+        <div class="e-chain-editor">
+          <div class="e-chain-row fixed"><strong>PREMISE</strong><div style="padding:12px">${challenge.premise}</div></div>
+          ${steps.map((step, index) => `<label class="e-chain-row"><strong>STEP ${index + 1}</strong><textarea data-field="back${state.stepCount - index}" aria-label="Causal step ${index + 1}">${esc(step)}</textarea></label>`).join('')}
+          <label class="e-chain-row answer"><strong>ANSWER</strong><textarea data-field="answer" aria-label="Answer">${esc(state.answer)}</textarea></label>
+        </div>
+      </section>`;
+    }
+
+    function ePublishGate(state) {
+      if (!state.emailSent) {
+        return `<aside class="e-publish"><span class="panel-number">NOT PUBLIC · NO BOARD PREVIEW</span><h2 class="heavy">Keep this Response.</h2><p>Choose a candidate Nickname and email yourself a publishing code. Nothing is reserved or published yet.</p>
+          <form data-form="e-email" novalidate>
+            <label class="field"><span>Candidate permanent Nickname</span><input data-field="nickname" value="${esc(state.nickname)}" placeholder="Moss Satellite" autocomplete="nickname"><span class="field-hint">Checked now; claimed only when you publish.</span></label>
+            <label class="field"><span>Email</span><input type="email" data-field="email" value="${esc(state.email)}" placeholder="you@example.com" autocomplete="email"></label>
+            ${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}
+            <button class="button primary" type="submit">Email a publishing code</button>
+            <button class="text-button" type="button" data-fill-e-account>Fill prototype details</button>
+          </form>
+          <p class="mini-note"><strong>Prototype assumption:</strong> no expiry countdown. This private draft lasts only in this tab; the Nickname remains available to others until publication.</p>
+        </aside>`;
+      }
+      return `<aside class="e-publish"><span class="panel-number">STILL PRIVATE · CODE SENT</span><h2 class="heavy">Verify, name, publish.</h2><p>Publication creates the Account, permanently claims <strong>${esc(state.nickname)}</strong>, and reveals the board for the first time.</p>
+        <form data-form="e-publish" novalidate>
+          <label class="field"><span>Six-digit email code</span><input data-field="code" inputmode="numeric" maxlength="6" value="${esc(state.code)}" placeholder="314159" autocomplete="one-time-code"><span class="field-hint">This prototype accepts any six digits.</span></label>
+          ${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}
+          <button class="button primary e-attested" type="submit">Verify email and publish permanently as ${esc(state.nickname)}. I confirm I am at least 18 and accept the Terms and Content Policy.</button>
+          <button class="text-button" type="button" data-e-reset-email>Change email or Nickname</button>
+        </form>
+        <p class="mini-note">No provisional public state. Until this action succeeds, the Response and board remain private.</p>
+      </aside>`;
+    }
+
+    function eBoard(state, message) {
+      return `<section>
+        <p class="callout success"><strong>${esc(message)}</strong></p>
+        <div class="board-mini">
+          <article class="board-card e-board-card"><span class="panel-number">YOUR LIVE CHALLENGE · 5 DAYS LEFT</span><strong>${challenge.premise}</strong><p>${challenge.target}</p><span class="mini-note">29 Responses · 214 Rating ballots</span></article>
+          <article class="board-card e-board-card"><span class="panel-number">NEW TODAY</span><strong>Plants remember every touch.</strong><p>How would a public garden settle ownership disputes?</p><span class="mini-note">7 Responses · 31 Rating ballots</span></article>
+          <article class="board-card e-board-card"><span class="panel-number">OPEN LAB</span><strong>Shadows point toward home.</strong><p>How would strangers navigate an unfamiliar city?</p><span class="mini-note">Results frozen · still playable</span></article>
+        </div>
+        <div class="result-list">
+          <div class="result-row"><strong>1</strong><span><strong>${challenge.peer.answer}</strong><br><span class="mini-note">${challenge.peer.author} · Convincing 85% · Entertaining 69%</span></span><strong>LIVE</strong></div>
+          <div class="result-row you"><strong>—</strong><span><strong>${esc(state.answer)}</strong><br><span class="mini-note">${esc(state.nickname)} · Needs 5 ratings</span></span><strong>YOU</strong></div>
+        </div>
+      </section>`;
+    }
+
+    function eBallot(state) {
+      const option = (dimension, value, label) => `<button type="button" class="rate ${state[dimension] === value ? 'selected' : ''}" data-rate="${dimension}" data-value="${value}" aria-pressed="${state[dimension] === value}">${label}</button>`;
+      return `<section class="panel ballot">
+        <article class="peer-response"><span class="panel-number">FIRST RATING BALLOT · ${challenge.peer.author.toUpperCase()}</span><p class="mini-note">${challenge.target}</p><h2>${challenge.peer.answer}</h2><div class="peer-chain">${challenge.peer.steps.map((step, index) => `<div class="peer-step"><strong>${index + 1}.</strong> ${step}</div>`).join('')}</div></article>
+        <div class="ratings">
+          <section class="rating"><h3>Convincing?</h3><p>Accepting the Premise, could you follow the causal path, and did the Answer feel earned?</p><div class="rating-options">${option('convincing','yes','Yes')}${option('convincing','no','No')}${option('convincing','abstain','Abstain')}</div></section>
+          <section class="rating"><h3>Entertaining?</h3><p>Did it hold your attention or give you a reaction worth rewarding?</p><div class="rating-options">${option('entertaining','yes','Yes')}${option('entertaining','no','No')}${option('entertaining','abstain','Abstain')}</div></section>
+        </div>
+        <footer class="ballot-footer"><p class="mini-note">Private and final. Choose Yes or No on at least one dimension.</p>${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}<button class="button primary" type="button" data-save-ballot="7">Save Rating ballot</button></footer>
+      </section>`;
+    }
+
+    function variantE() {
+      const state = current();
+      let content = '';
+      if (state.stage < 5) {
+        content = `${eRewind(state)}<section class="d-stage"><aside class="d-premise-spine">
+          <span class="deadline">LIVE CHALLENGE · 5 DAYS LEFT</span>
+          <div class="e-challenge-part"><span class="panel-number">PREMISE · ACCEPT AS TRUE</span><h2>${challenge.premise}</h2></div>
+          <div class="e-challenge-part"><span class="panel-number">TARGET · ANSWER THIS</span><h2>${challenge.target}</h2></div>
+        </aside><section class="d-current">${eRelayForm(state)}</section></section>
+        <p class="callout" style="margin-top:22px"><strong>Revised-map hypothesis:</strong> Answer the Target first, then work backward until two to four adjacent causal steps connect it to the Premise.</p>`;
+      } else if (state.stage === 5) {
+        content = `<h1 class="hero-title" style="font-size:clamp(40px,7vw,82px)">PRIVATE UNTIL<br>YOU PUBLISH.</h1><div class="e-gate">${eEditableChain(state)}${ePublishGate(state)}</div>`;
+      } else if (state.stage === 6) {
+        content = `<h1 class="hero-title" style="font-size:clamp(40px,7vw,82px)">PUBLISHED.<br>NOW THE BOARD.</h1><div class="d-after-publish"><div>${eBoard(state, `Published as ${state.nickname}. This is the first board reveal.`)}</div><div>${eBallot(state)}</div></div>`;
+      } else {
+        content = `<h1 class="hero-title" style="font-size:clamp(40px,7vw,82px)">FIRST LOOP<br>COMPLETE.</h1>${eBoard(state, 'Your first Rating ballot is saved. The board is open for free exploration.')}`;
+      }
+      return `<div class="shell b-shell">${topbar()}<div class="stage-line"><span class="stage-chip current">Current map · ${state.stage < 5 ? 'Answer then rewind' : state.stage === 5 ? 'private draft and verification' : state.stage === 6 ? 'publication plus first ballot' : 'free board'}</span></div>${content}</div>`;
+    }
+
     function render() {
       const app = document.querySelector('#app');
-      app.innerHTML = variant === 'A' ? variantA() : variant === 'B' ? variantB() : variant === 'C' ? variantC() : variantD();
+      app.innerHTML = variant === 'A' ? variantA() : variant === 'B' ? variantB() : variant === 'C' ? variantC() : variant === 'D' ? variantD() : variantE();
       const info = variants.find(item => item.key === variant);
       document.querySelector('#switcher-label').textContent = `${info.key} · ${info.name}`;
       const state = current();
@@ -716,6 +897,45 @@
         state.error = '';
         render();
       }
+      if (event.target.dataset.form === 'e-relay') {
+        const field = state.stage === 0 ? 'answer' : `back${state.stage}`;
+        if (!state[field].trim()) {
+          state.error = 'Write one line before drawing the next panel.';
+          render();
+          return;
+        }
+        const action = event.submitter?.dataset.eAction;
+        if (state.stage < 2 || action === 'add') {
+          setStage(state.stage + 1);
+          return;
+        }
+        state.stepCount = state.stage;
+        setStage(5);
+      }
+      if (event.target.dataset.form === 'e-email') {
+        if (!eResponseComplete(state)) {
+          state.error = 'Keep two to four complete causal steps before publishing.';
+          render();
+          return;
+        }
+        if (state.nickname.trim().length < 3 || !state.email.includes('@')) {
+          state.error = 'Enter an email address and a candidate Nickname of at least three characters.';
+          render();
+          return;
+        }
+        state.emailSent = true;
+        state.error = '';
+        render();
+      }
+      if (event.target.dataset.form === 'e-publish') {
+        if (!/^\d{6}$/.test(state.code)) {
+          state.error = 'Enter the six-digit code from the email.';
+          render();
+          return;
+        }
+        state.verified = true;
+        setStage(6);
+      }
     });
 
     document.addEventListener('click', event => {
@@ -744,6 +964,26 @@
           return;
         }
         setStage(5);
+      }
+      if (button.hasAttribute('data-fill-e-current')) {
+        const state = current();
+        const field = state.stage === 0 ? 'answer' : `back${state.stage}`;
+        state[field] = state.stage === 0 ? challenge.answer : challenge.reverseSteps[state.stage - 1];
+        state.error = '';
+        render();
+      }
+      if (button.hasAttribute('data-fill-e-account')) {
+        const state = current();
+        state.nickname = 'Moss Satellite';
+        state.email = 'player@example.com';
+        state.error = '';
+        render();
+      }
+      if (button.hasAttribute('data-e-reset-email')) {
+        current().emailSent = false;
+        current().code = '';
+        current().error = '';
+        render();
       }
       if (button.dataset.rate) {
         current()[button.dataset.rate] = button.dataset.value;
