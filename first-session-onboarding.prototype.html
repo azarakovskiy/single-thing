@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Five first-session onboarding journeys, switchable via ?variant=A|B|C|D|E, in one throwaway Science Storyboard prototype. -->
+<!-- Six first-session onboarding journeys, switchable via ?variant=A|B|C|D|E|F, in one throwaway Science Storyboard prototype. -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -238,6 +238,48 @@
     .e-publish { padding: 25px; border: 4px solid var(--ink); background: var(--pink); box-shadow: var(--shadow); }
     .e-publish form { display: grid; gap: 14px; }
     .e-attested { text-align: left; line-height: 1.25; }
+
+    /* Variant F: the human-selected single-page, Answer-first, forward explanation. */
+    .f-challenge {
+      display: grid;
+      grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
+      margin-top: 24px;
+      border: 4px solid var(--ink);
+      box-shadow: 9px 9px 0 var(--ink);
+    }
+    .f-challenge article { min-height: 210px; padding: 22px; }
+    .f-challenge article:first-child { border-right: 4px solid var(--ink); background: var(--yellow); }
+    .f-challenge article:last-child { background: var(--white); }
+    .f-challenge h1 { margin: 38px 0 0; font-size: clamp(30px, 4vw, 58px); }
+    .f-compose { margin-top: 22px; }
+    .f-answer-card { display: block; padding: clamp(20px, 4vw, 38px); border: 4px solid var(--ink); color: var(--white); background: var(--teal); box-shadow: 9px 9px 0 var(--ink); }
+    .f-answer-card h2 { margin-bottom: 8px; font-size: clamp(38px, 6vw, 74px); }
+    .f-answer-card textarea { min-height: 86px; padding: 12px 0; border: 0; border-bottom: 5px solid var(--ink); color: var(--white); background: transparent; font-size: clamp(20px, 2.5vw, 31px); font-weight: 900; }
+    .f-answer-card textarea::placeholder { color: #d7f4ef; }
+    .f-explanation { margin-top: 26px; padding: clamp(18px, 3vw, 30px); border: 4px solid var(--ink); background: var(--white); box-shadow: 9px 9px 0 var(--ink); }
+    .f-explanation h2 { margin-bottom: 8px; font-size: clamp(34px, 5vw, 64px); }
+    .f-chain { display: flex; align-items: stretch; margin-top: 22px; overflow-x: auto; padding: 4px 4px 14px; }
+    .f-node { flex: 1 0 190px; min-height: 176px; padding: 14px; border: 3px solid var(--ink); background: var(--mint); }
+    .f-node.premise { background: var(--yellow); }
+    .f-node.answer { color: var(--white); background: var(--teal); }
+    .f-node .panel-number { margin-bottom: 26px; }
+    .f-node textarea { min-height: 104px; padding: 0; border: 0; background: transparent; }
+    .f-node.answer .panel-number { color: #173c3a; }
+    .f-node strong { display: block; line-height: 1.2; overflow-wrap: anywhere; }
+    .f-arrow { display: grid; flex: 0 0 34px; place-items: center; font-size: 24px; font-weight: 1000; }
+    .f-chain-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 14px; }
+    .f-chain-actions button:disabled { opacity: .38; cursor: not-allowed; transform: none; box-shadow: 4px 4px 0 var(--ink); }
+    .f-publish-inline { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .72fr); gap: 20px; align-items: start; margin-top: 24px; }
+    .f-publish-note { padding: 25px; border: 4px solid var(--ink); color: var(--white); background: var(--ink); }
+    .f-publish-note h2 { font-size: clamp(34px, 4vw, 54px); }
+    @media (max-width: 860px) {
+      .f-challenge, .f-publish-inline { grid-template-columns: 1fr; }
+      .f-challenge article:first-child { border-right: 0; border-bottom: 4px solid var(--ink); }
+      .f-challenge article { min-height: auto; }
+      .f-chain { flex-direction: column; overflow: visible; }
+      .f-node { flex-basis: auto; min-height: 130px; }
+      .f-arrow { flex-basis: 32px; transform: rotate(90deg); }
+    }
     .e-board-card p { margin: 10px 0 0; font-size: 12px; }
     .ballot { display: grid; gap: 0; }
     .peer-response { padding: clamp(18px, 3vw, 30px); border-bottom: 3px solid var(--ink); background: var(--yellow); }
@@ -362,7 +404,8 @@
       { key: 'B', name: 'Cold open' },
       { key: 'C', name: 'Board doorway' },
       { key: 'D', name: 'Panel relay · earlier rules' },
-      { key: 'E', name: 'Verified publish · revised map' }
+      { key: 'E', name: 'Verified publish · revised map' },
+      { key: 'F', name: 'Single-page explanation' }
     ];
     const example = {
       premise: 'What if humans only needed two hours of sleep?',
@@ -417,6 +460,7 @@
       step1: '',
       step2: '',
       step3: '',
+      step4: '',
       convincing: '',
       entertaining: '',
       back1: '',
@@ -425,7 +469,7 @@
       back4: '',
       stepCount: 0,
     });
-    const stateByVariant = { A: initialState(), B: initialState(), C: initialState(), D: initialState(), E: initialState() };
+    const stateByVariant = { A: initialState(), B: initialState(), C: initialState(), D: initialState(), E: initialState(), F: initialState() };
     const queryVariant = new URLSearchParams(location.search).get('variant')?.toUpperCase();
     let variant = variants.some(item => item.key === queryVariant) ? queryVariant : 'A';
 
@@ -433,12 +477,12 @@
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
     })[char]);
     const current = () => stateByVariant[variant];
-    const identityStatus = state => variant === 'E'
+    const identityStatus = state => ['E', 'F'].includes(variant)
       ? (state.verified ? 'published' : state.emailSent ? 'private-awaiting-code' : state.nickname ? 'private-candidate' : 'open')
       : variant === 'D' ? (state.verified ? 'verified' : state.nickname ? 'provisional' : 'open') : (accountComplete(state) ? 'ready' : 'open');
     const responseComplete = state => variant === 'E'
       ? eResponseComplete(state)
-      : [state.answer, state.step1, state.step2, state.step3].every(value => value.trim());
+      : variant === 'F' ? fResponseComplete(state) : [state.answer, state.step1, state.step2, state.step3].every(value => value.trim());
     const accountComplete = state => state.email.includes('@') && /^\d{6}$/.test(state.code) && state.nickname.trim().length >= 3 && state.adult && state.terms && state.permanent;
     const ballotComplete = state => Boolean(state.convincing || state.entertaining);
 
@@ -797,9 +841,61 @@
       return `<div class="shell b-shell">${topbar()}<div class="stage-line"><span class="stage-chip current">Current map · ${state.stage < 5 ? 'Answer then rewind' : state.stage === 5 ? 'private draft and verification' : state.stage === 6 ? 'publication plus first ballot' : 'free board'}</span></div>${content}</div>`;
     }
 
+    function fStepCount(state) {
+      return Math.min(4, Math.max(2, state.stepCount || 2));
+    }
+
+    function fSteps(state) {
+      return Array.from({ length: fStepCount(state) }, (_, index) => state[`step${index + 1}`]);
+    }
+
+    function fResponseComplete(state) {
+      return Boolean(state.answer.trim() && fSteps(state).every(step => step.trim()));
+    }
+
+    function fComposer(state) {
+      const count = fStepCount(state);
+      const steps = fSteps(state);
+      const allStepsFilled = steps.every(step => step.trim());
+      const arrow = '<span class="f-arrow" aria-hidden="true">→</span>';
+      const stepPanels = steps.map((step, index) => `${arrow}<label class="f-node"><span class="panel-number">CAUSAL STEP ${index + 1}${index > 1 ? ' · OPTIONAL' : ''}</span><textarea data-field="step${index + 1}" aria-label="Causal step ${index + 1}" placeholder="${index ? 'What happens next?' : 'What happens first?'}">${esc(step)}</textarea></label>`).join('');
+      return `<section class="f-challenge">
+          <article><span class="deadline">LIVE CHALLENGE · 5 DAYS LEFT</span><span class="panel-number">PREMISE · ACCEPT AS TRUE</span><h1>${challenge.premise}</h1></article>
+          <article><span class="panel-number">TARGET · ANSWER THIS</span><h1>${challenge.target}</h1></article>
+        </section>
+        <form class="f-compose" data-form="f-response" novalidate>
+          <label class="f-answer-card"><span class="panel-number" style="color:#173c3a">START HERE · FINAL ANSWER</span><h2>What changes?</h2><textarea data-field="answer" aria-label="Final Answer" placeholder="One concise consequence…" autofocus>${esc(state.answer)}</textarea></label>
+          <section class="f-explanation">
+            <span class="panel-number">THEN EXPLAIN IT</span>
+            <h2>How does the Premise lead there?</h2>
+            <p>Write at least two Causal steps. Add a third or fourth only if the connection needs them.</p>
+            <div class="f-chain" aria-label="Current Response chain">
+              <article class="f-node premise"><span class="panel-number">PREMISE</span><strong>${challenge.premise}</strong></article>
+              ${stepPanels}
+              ${arrow}<article class="f-node answer"><span class="panel-number">FINAL ANSWER</span><strong data-f-answer-preview>${esc(state.answer || 'Your Answer appears here.')}</strong></article>
+            </div>
+            <div class="f-chain-actions">
+              ${count < 4 ? `<button class="button small" type="button" data-f-add-step ${allStepsFilled ? '' : 'disabled'}>Add optional Causal step ${count + 1}</button>` : ''}
+              ${count > 2 ? '<button class="text-button" type="button" data-f-remove-step>Remove last optional step</button>' : ''}
+            </div>
+            ${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}
+            ${state.stage === 0 ? '<div class="button-row"><button class="button primary" type="submit">Continue to publication</button><button class="text-button" type="button" data-fill-f-response>Use sample response</button></div>' : '<p class="callout success" style="margin-top:20px"><strong>Publication is ready below.</strong> Every line stays editable here until the final action succeeds.</p>'}
+          </section>
+        </form>
+        ${state.stage === 1 ? `<section class="f-publish-inline"><div class="f-publish-note"><span class="panel-number" style="color:var(--yellow)">NO REVIEW PAGE</span><h2>Publish from this same page.</h2><p>Your current chain stays above. The board remains hidden until the atomic publication action succeeds.</p></div>${ePublishGate(state)}</section>` : ''}`;
+    }
+
+    function variantF() {
+      const state = current();
+      const content = state.stage === 2
+        ? `<h1 class="hero-title" style="font-size:clamp(40px,7vw,82px)">PUBLISHED.<br>EXPLORE THE BOARD.</h1>${eBoard(state, `Published as ${state.nickname}. The full board is open; no Rating ballot is part of onboarding.`)}`
+        : fComposer(state);
+      return `<div class="shell b-shell">${topbar()}<div class="stage-line"><span class="stage-chip current">Selected direction · Answer → Explanation → Publish → Board</span></div>${content}</div>`;
+    }
+
     function render() {
       const app = document.querySelector('#app');
-      app.innerHTML = variant === 'A' ? variantA() : variant === 'B' ? variantB() : variant === 'C' ? variantC() : variant === 'D' ? variantD() : variantE();
+      app.innerHTML = variant === 'A' ? variantA() : variant === 'B' ? variantB() : variant === 'C' ? variantC() : variant === 'D' ? variantD() : variant === 'E' ? variantE() : variantF();
       const info = variants.find(item => item.key === variant);
       document.querySelector('#switcher-label').textContent = `${info.key} · ${info.name}`;
       const state = current();
@@ -841,6 +937,12 @@
       document.querySelector('#state-readout').textContent = `STATE · variant=${variant} · stage=${current().stage} · account=${identityStatus(current())} · response=${responseComplete(current()) ? 'complete' : 'open'} · ballot=${ballotComplete(current()) ? 'marked' : 'open'}\nPrototype loaded. No persistence.`;
       const publishButton = document.querySelector('[data-provisional-publish]');
       if (field === 'nickname' && publishButton) publishButton.textContent = `Publish as ${current().nickname || 'this Nickname'}`;
+      if (variant === 'F') {
+        const answerPreview = document.querySelector('[data-f-answer-preview]');
+        if (answerPreview && field === 'answer') answerPreview.textContent = current().answer || 'Your Answer appears here.';
+        const addStep = document.querySelector('[data-f-add-step]');
+        if (addStep) addStep.disabled = !fSteps(current()).every(step => step.trim());
+      }
     });
 
     document.addEventListener('change', event => {
@@ -912,8 +1014,16 @@
         state.stepCount = state.stage;
         setStage(5);
       }
+      if (event.target.dataset.form === 'f-response') {
+        if (!fResponseComplete(state)) {
+          state.error = 'Write the Final Answer and every visible Causal step before continuing.';
+          render();
+          return;
+        }
+        setStage(1);
+      }
       if (event.target.dataset.form === 'e-email') {
-        if (!eResponseComplete(state)) {
+        if (!(variant === 'F' ? fResponseComplete(state) : eResponseComplete(state))) {
           state.error = 'Keep two to four complete causal steps before publishing.';
           render();
           return;
@@ -934,7 +1044,7 @@
           return;
         }
         state.verified = true;
-        setStage(6);
+        setStage(variant === 'F' ? 2 : 6);
       }
     });
 
@@ -976,6 +1086,30 @@
         const state = current();
         state.nickname = 'Moss Satellite';
         state.email = 'player@example.com';
+        state.error = '';
+        render();
+      }
+      if (button.hasAttribute('data-fill-f-response')) {
+        const state = current();
+        state.answer = challenge.answer;
+        state.step1 = challenge.reverseSteps[3];
+        state.step2 = challenge.reverseSteps[1];
+        state.stepCount = 2;
+        state.error = '';
+        render();
+      }
+      if (button.hasAttribute('data-f-add-step')) {
+        const state = current();
+        if (!fSteps(state).every(step => step.trim()) || fStepCount(state) === 4) return;
+        state.stepCount = fStepCount(state) + 1;
+        state.error = '';
+        render();
+      }
+      if (button.hasAttribute('data-f-remove-step')) {
+        const state = current();
+        const count = fStepCount(state);
+        state[`step${count}`] = '';
+        state.stepCount = count - 1;
         state.error = '';
         render();
       }
