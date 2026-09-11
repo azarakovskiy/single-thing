@@ -242,43 +242,67 @@
     /* Variant F: the human-selected single-page, Answer-first, forward explanation. */
     .f-challenge {
       display: grid;
-      grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
-      margin-top: 24px;
-      border: 4px solid var(--ink);
-      box-shadow: 9px 9px 0 var(--ink);
+      grid-template-columns: minmax(240px, .8fr) minmax(0, 1.2fr);
+      margin-top: 16px;
+      border: 2px solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
     }
-    .f-challenge article { min-height: 210px; padding: 22px; }
-    .f-challenge article:first-child { border-right: 4px solid var(--ink); background: var(--yellow); }
+    .f-challenge article { min-height: 136px; padding: 16px; }
+    .f-challenge article:first-child { border-right: 2px solid var(--ink); background: var(--yellow); }
     .f-challenge article:last-child { background: var(--white); }
-    .f-challenge h1 { margin: 38px 0 0; font-size: clamp(30px, 4vw, 58px); }
-    .f-compose { margin-top: 22px; }
-    .f-answer-card { display: block; padding: clamp(20px, 4vw, 38px); border: 4px solid var(--ink); color: var(--white); background: var(--teal); box-shadow: 9px 9px 0 var(--ink); }
-    .f-answer-card h2 { margin-bottom: 8px; font-size: clamp(38px, 6vw, 74px); }
-    .f-answer-card textarea { min-height: 86px; padding: 12px 0; border: 0; border-bottom: 5px solid var(--ink); color: var(--white); background: transparent; font-size: clamp(20px, 2.5vw, 31px); font-weight: 900; }
+    .f-challenge .panel-number { margin-bottom: 14px; }
+    .f-challenge h1 { margin: 18px 0 0; font-size: clamp(25px, 3vw, 40px); }
+    .f-compose { display: grid; grid-template-columns: minmax(250px, .65fr) minmax(0, 1.35fr); gap: 12px; align-items: start; margin-top: 14px; }
+    .f-answer-column { display: grid; gap: 12px; align-content: start; }
+    .f-answer-card { display: block; padding: 18px; border: 2px solid var(--ink); color: var(--white); background: var(--teal); }
+    .f-answer-card .panel-number { margin-bottom: 14px; }
+    .f-answer-card h2 { margin-bottom: 6px; font-size: clamp(30px, 3.5vw, 45px); }
+    .f-answer-card textarea { min-height: 66px; padding: 9px 0; border: 0; border-bottom: 3px solid var(--ink); color: var(--white); background: transparent; font-size: clamp(17px, 1.8vw, 23px); font-weight: 900; }
     .f-answer-card textarea::placeholder { color: #d7f4ef; }
-    .f-explanation { margin-top: 26px; padding: clamp(18px, 3vw, 30px); border: 4px solid var(--ink); background: var(--white); box-shadow: 9px 9px 0 var(--ink); }
-    .f-explanation h2 { margin-bottom: 8px; font-size: clamp(34px, 5vw, 64px); }
-    .f-chain { display: flex; align-items: stretch; margin-top: 22px; overflow-x: auto; padding: 4px 4px 14px; }
-    .f-node { flex: 1 0 190px; min-height: 176px; padding: 14px; border: 3px solid var(--ink); background: var(--mint); }
+    .f-explanation { padding: 18px; border: 2px solid var(--ink); background: var(--white); box-shadow: 3px 3px 0 var(--ink); }
+    .f-explanation .panel-number { margin-bottom: 12px; }
+    .f-explanation h2 { margin-bottom: 7px; font-size: clamp(28px, 3.5vw, 43px); }
+    .f-explanation > p { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+    .f-chain { display: flex; align-items: stretch; margin-top: 14px; overflow-x: auto; padding: 2px 2px 10px; }
+    .f-node { flex: 1 0 150px; min-height: 126px; padding: 10px; border: 2px solid var(--ink); background: var(--white); }
     .f-node.premise { background: var(--yellow); }
     .f-node.answer { color: var(--white); background: var(--teal); }
-    .f-node .panel-number { margin-bottom: 26px; }
-    .f-node textarea { min-height: 104px; padding: 0; border: 0; background: transparent; }
+    .f-node .panel-number { margin-bottom: 14px; }
+    .f-node textarea { min-height: 78px; padding: 0; border: 0; background: transparent; font-size: 13px; }
     .f-node.answer .panel-number { color: #173c3a; }
-    .f-node strong { display: block; line-height: 1.2; overflow-wrap: anywhere; }
-    .f-arrow { display: grid; flex: 0 0 34px; place-items: center; font-size: 24px; font-weight: 1000; }
-    .f-chain-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 14px; }
-    .f-chain-actions button:disabled { opacity: .38; cursor: not-allowed; transform: none; box-shadow: 4px 4px 0 var(--ink); }
-    .f-publish-inline { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .72fr); gap: 20px; align-items: start; margin-top: 24px; }
-    .f-publish-note { padding: 25px; border: 4px solid var(--ink); color: var(--white); background: var(--ink); }
-    .f-publish-note h2 { font-size: clamp(34px, 4vw, 54px); }
+    .f-node strong { display: block; font-size: 13px; line-height: 1.2; overflow-wrap: anywhere; }
+    .f-arrow { display: grid; flex: 0 0 24px; place-items: center; font-size: 18px; font-weight: 1000; }
+    .f-chain-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+    .f-chain-actions button:disabled { opacity: .38; cursor: not-allowed; transform: none; box-shadow: 3px 3px 0 var(--ink); }
+    .f-answer-column .e-publish { padding: 16px; border: 2px solid var(--ink); background: var(--white); box-shadow: 3px 3px 0 var(--ink); }
+    .f-answer-column .e-publish .panel-number { margin-bottom: 12px; }
+    .f-answer-column .e-publish h2 { font-size: 28px; }
+    .f-answer-column .e-publish p { font-size: 12px; }
+    .f-live { margin-top: 14px; padding: 16px; border: 2px solid var(--ink); background: var(--white); box-shadow: 3px 3px 0 var(--ink); }
+    .f-live-head { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 4px; }
+    .f-live-head h1 { margin-bottom: 5px; font-size: clamp(30px, 4vw, 48px); }
+    .f-live-badge { flex: 0 0 auto; padding: 7px 9px; border: 2px solid var(--ink); background: var(--mint); font-size: 12px; font-weight: 900; }
+    .f-live-chain { margin-top: 12px; }
+    .f-board-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 12px; margin-top: 14px; }
+    .f-board-section { border: 2px solid var(--ink); background: var(--white); }
+    .f-board-section > header { padding: 14px; border-bottom: 2px solid var(--ink); }
+    .f-board-section h2 { margin-bottom: 4px; font-size: 27px; }
+    .f-board-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--ink); }
+    .f-board-row:last-child { border-bottom: 0; }
+    .f-board-row.you { background: var(--yellow); }
+    .f-board-row strong { display: block; }
+    .f-board-row span { font-size: 11px; font-weight: 900; }
+    .f-explore-item { display: block; padding: 13px 14px; border-bottom: 1px solid var(--ink); }
+    .f-explore-item:last-child { border-bottom: 0; }
+    .f-explore-item strong { display: block; margin-bottom: 5px; }
     @media (max-width: 860px) {
-      .f-challenge, .f-publish-inline { grid-template-columns: 1fr; }
-      .f-challenge article:first-child { border-right: 0; border-bottom: 4px solid var(--ink); }
+      .f-challenge, .f-compose, .f-board-grid { grid-template-columns: 1fr; }
+      .f-challenge article:first-child { border-right: 0; border-bottom: 2px solid var(--ink); }
       .f-challenge article { min-height: auto; }
       .f-chain { flex-direction: column; overflow: visible; }
-      .f-node { flex-basis: auto; min-height: 130px; }
-      .f-arrow { flex-basis: 32px; transform: rotate(90deg); }
+      .f-node { flex-basis: auto; min-height: 110px; }
+      .f-arrow { flex-basis: 26px; transform: rotate(90deg); }
+      .f-live-head { align-items: start; flex-direction: column; }
     }
     .e-board-card p { margin: 10px 0 0; font-size: 12px; }
     .ballot { display: grid; gap: 0; }
@@ -853,18 +877,25 @@
       return Boolean(state.answer.trim() && fSteps(state).every(step => step.trim()));
     }
 
+    function fChallenge() {
+      return `<section class="f-challenge">
+        <article><span class="deadline">LIVE CHALLENGE · 5 DAYS LEFT</span><span class="panel-number">PREMISE · ACCEPT AS TRUE</span><h1>${challenge.premise}</h1></article>
+        <article><span class="panel-number">TARGET · ANSWER THIS</span><h1>${challenge.target}</h1></article>
+      </section>`;
+    }
+
     function fComposer(state) {
       const count = fStepCount(state);
       const steps = fSteps(state);
       const allStepsFilled = steps.every(step => step.trim());
       const arrow = '<span class="f-arrow" aria-hidden="true">→</span>';
       const stepPanels = steps.map((step, index) => `${arrow}<label class="f-node"><span class="panel-number">CAUSAL STEP ${index + 1}${index > 1 ? ' · OPTIONAL' : ''}</span><textarea data-field="step${index + 1}" aria-label="Causal step ${index + 1}" placeholder="${index ? 'What happens next?' : 'What happens first?'}">${esc(step)}</textarea></label>`).join('');
-      return `<section class="f-challenge">
-          <article><span class="deadline">LIVE CHALLENGE · 5 DAYS LEFT</span><span class="panel-number">PREMISE · ACCEPT AS TRUE</span><h1>${challenge.premise}</h1></article>
-          <article><span class="panel-number">TARGET · ANSWER THIS</span><h1>${challenge.target}</h1></article>
-        </section>
-        <form class="f-compose" data-form="f-response" novalidate>
-          <label class="f-answer-card"><span class="panel-number" style="color:#173c3a">START HERE · FINAL ANSWER</span><h2>What changes?</h2><textarea data-field="answer" aria-label="Final Answer" placeholder="One concise consequence…" autofocus>${esc(state.answer)}</textarea></label>
+      return `${fChallenge()}
+        <section class="f-compose">
+          <div class="f-answer-column">
+            <label class="f-answer-card"><span class="panel-number" style="color:#173c3a">START HERE · FINAL ANSWER</span><h2>What changes?</h2><textarea data-field="answer" aria-label="Final Answer" placeholder="One concise consequence…" autofocus>${esc(state.answer)}</textarea></label>
+            ${state.stage === 1 ? ePublishGate(state) : ''}
+          </div>
           <section class="f-explanation">
             <span class="panel-number">THEN EXPLAIN IT</span>
             <h2>How does the Premise lead there?</h2>
@@ -878,19 +909,42 @@
               ${count < 4 ? `<button class="button small" type="button" data-f-add-step ${allStepsFilled ? '' : 'disabled'}>Add optional Causal step ${count + 1}</button>` : ''}
               ${count > 2 ? '<button class="text-button" type="button" data-f-remove-step>Remove last optional step</button>' : ''}
             </div>
-            ${state.error ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}
-            ${state.stage === 0 ? '<div class="button-row"><button class="button primary" type="submit">Continue to publication</button><button class="text-button" type="button" data-fill-f-response>Use sample response</button></div>' : '<p class="callout success" style="margin-top:20px"><strong>Publication is ready below.</strong> Every line stays editable here until the final action succeeds.</p>'}
+            ${state.error && state.stage === 0 ? `<p class="error" role="alert">${esc(state.error)}</p>` : ''}
+            ${state.stage === 0 ? '<div class="button-row"><button class="button primary" type="button" data-f-continue>Continue to publication</button><button class="text-button" type="button" data-fill-f-response>Use sample response</button></div>' : '<p class="callout success" style="margin-top:14px"><strong>Ready to publish.</strong> Every line stays editable until the final action succeeds.</p>'}
           </section>
-        </form>
-        ${state.stage === 1 ? `<section class="f-publish-inline"><div class="f-publish-note"><span class="panel-number" style="color:var(--yellow)">NO REVIEW PAGE</span><h2>Publish from this same page.</h2><p>Your current chain stays above. The board remains hidden until the atomic publication action succeeds.</p></div>${ePublishGate(state)}</section>` : ''}`;
+        </section>`;
+    }
+
+    function fPublishedBoard(state) {
+      const arrow = '<span class="f-arrow" aria-hidden="true">→</span>';
+      const stepPanels = fSteps(state).map((step, index) => `${arrow}<article class="f-node"><span class="panel-number">CAUSAL STEP ${index + 1}</span><strong>${esc(step)}</strong></article>`).join('');
+      return `${fChallenge()}
+        <section class="f-live">
+          <header class="f-live-head"><div><h1>Your Response is live.</h1><p class="mini-note">The chain you made is now part of this Challenge.</p></div><span class="f-live-badge">Published as ${esc(state.nickname)}</span></header>
+          <div class="f-chain f-live-chain" aria-label="Published Response chain">
+            <article class="f-node premise"><span class="panel-number">PREMISE</span><strong>${challenge.premise}</strong></article>
+            ${stepPanels}
+            ${arrow}<article class="f-node answer"><span class="panel-number">FINAL ANSWER</span><strong>${esc(state.answer)}</strong></article>
+          </div>
+        </section>
+        <section class="f-board-grid" aria-label="Full board">
+          <section class="f-board-section">
+            <header><h2>Responses to this Challenge</h2><p class="mini-note">29 Responses · 214 Rating ballots</p></header>
+            <article class="f-board-row you"><div><strong>${esc(state.answer)}</strong><span>${esc(state.nickname)} · Published now</span></div><span>YOU</span></article>
+            <article class="f-board-row"><div><strong>${challenge.peer.answer}</strong><span>${challenge.peer.author} · Convincing 85% · Entertaining 69%</span></div><span>LIVE</span></article>
+            <article class="f-board-row"><div><strong>Night buses become moving neighborhood cafés.</strong><span>Theo Alvarez · Convincing 77% · Entertaining 82%</span></div><span>LIVE</span></article>
+          </section>
+          <aside class="f-board-section">
+            <header><h2>Explore Challenges</h2><p class="mini-note">The full board is available now.</p></header>
+            <article class="f-explore-item"><strong>Plants remember every touch.</strong><span class="mini-note">7 Responses · 31 Rating ballots</span></article>
+            <article class="f-explore-item"><strong>Shadows point toward home.</strong><span class="mini-note">Open Lab · still playable</span></article>
+          </aside>
+        </section>`;
     }
 
     function variantF() {
       const state = current();
-      const content = state.stage === 2
-        ? `<h1 class="hero-title" style="font-size:clamp(40px,7vw,82px)">PUBLISHED.<br>EXPLORE THE BOARD.</h1>${eBoard(state, `Published as ${state.nickname}. The full board is open; no Rating ballot is part of onboarding.`)}`
-        : fComposer(state);
-      return `<div class="shell b-shell">${topbar()}<div class="stage-line"><span class="stage-chip current">Selected direction · Answer → Explanation → Publish → Board</span></div>${content}</div>`;
+      return `<div class="shell b-shell">${topbar()}${state.stage === 2 ? fPublishedBoard(state) : fComposer(state)}</div>`;
     }
 
     function render() {
@@ -1014,14 +1068,6 @@
         state.stepCount = state.stage;
         setStage(5);
       }
-      if (event.target.dataset.form === 'f-response') {
-        if (!fResponseComplete(state)) {
-          state.error = 'Write the Final Answer and every visible Causal step before continuing.';
-          render();
-          return;
-        }
-        setStage(1);
-      }
       if (event.target.dataset.form === 'e-email') {
         if (!(variant === 'F' ? fResponseComplete(state) : eResponseComplete(state))) {
           state.error = 'Keep two to four complete causal steps before publishing.';
@@ -1088,6 +1134,15 @@
         state.email = 'player@example.com';
         state.error = '';
         render();
+      }
+      if (button.hasAttribute('data-f-continue')) {
+        const state = current();
+        if (!fResponseComplete(state)) {
+          state.error = 'Write the Final Answer and every visible Causal step before continuing.';
+          render();
+          return;
+        }
+        setStage(1);
       }
       if (button.hasAttribute('data-fill-f-response')) {
         const state = current();
